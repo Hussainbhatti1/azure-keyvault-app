@@ -3,42 +3,48 @@ trigger:
     include:
       - main
 
-pool:
-  vmImage: ubuntu-latest
-
 variables:
-  azureSubscription: 'Your-Azure-DevOps-Service-Connection'
+  azureSubscription: 'AzureConnection-Project2'
   webAppName: 'azure-keyvault-app'
   resourceGroupName: 'Project2'
+  nodeVersion: '18.x'
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '$(nodeVersion)'
+    displayName: 'Install Node.js'
 
-- script: |
-    npm install
-    npm run build || echo "No build step"
-  displayName: 'Install dependencies'
+  - script: |
+      npm install
+    displayName: 'Install Dependencies'
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
-    replaceExistingArchive: true
+  - script: |
+      npm run build || echo "no build step"
+    displayName: 'Build App'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(webAppName).zip'
+      replaceExistingArchive: true
+    displayName: 'Archive Files'
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: '$(azureSubscription)'
-    appType: 'webAppLinux'
-    appName: '$(webAppName)'
-    package: '$(Build.ArtifactStagingDirectory)/app.zip'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(webAppName).zip'
+      ArtifactName: 'drop'
+    displayName: 'Publish Artifact'
+
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: '$(azureSubscription)'
+      appType: 'webApp'
+      appName: '$(webAppName)'
+      package: '$(Pipeline.Workspace)/drop/$(webAppName).zip'
+    displayName: 'Deploy to Azure Web App'
