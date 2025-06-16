@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - main
+      - master  # ✅ Changed from 'main' to 'master'
 
 variables:
   azureSubscription: 'AzureConnection-Project2'
@@ -10,7 +10,7 @@ variables:
   nodeVersion: '18.x'
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: Default  # ✅ Use self-hosted agent on your MacBook
 
 steps:
   - task: NodeTool@0
