@@ -1,31 +1,33 @@
 trigger:
-  branches:
-    include:
-      - master  # ✅ Changed from 'main' to 'master'
+- master
+
+pool:
+  name: Default
 
 variables:
   azureSubscription: 'AzureConnection-Project2'
   webAppName: 'azure-keyvault-app'
-  resourceGroupName: 'Project2'
   nodeVersion: '18.x'
 
-pool:
-  name: Default  # ✅ Use self-hosted agent on your MacBook
-
 steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '$(nodeVersion)'
-    displayName: 'Install Node.js'
+- task: NodeTool@0
+  inputs:
+    versionSpec: '$(nodeVersion)'
+  displayName: 'Install Node.js'
 
-  - script: |
-      npm install
-    displayName: 'Install Dependencies'
+- script: |
+    npm install
+    npm run build --if-present
+  displayName: 'Install dependencies'
 
-  - script: |
-      npm run build || echo "no build step"
-    displayName: 'Build App'
+- script: |
+    cd $(System.DefaultWorkingDirectory)
+    zip -r ../app.zip . -x '*.git*' 'node_modules/*' '*.DS_Store*'
+    mv ../app.zip $(Build.ArtifactStagingDirectory)/app.zip
+    ls -la $(Build.ArtifactStagingDirectory)
+  displayName: 'Create deployment package'
 
+<<<<<<< HEAD
   # ✅ Archive including node_modules and relevant files
   - task: ArchiveFiles@2
     inputs:
@@ -51,3 +53,13 @@ steps:
       appName: '$(webAppName)'
       package: '$(Pipeline.Workspace)/drop/$(webAppName).zip'
     displayName: 'Deploy to Azure Web App'
+=======
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: '$(azureSubscription)'
+    appType: 'webAppLinux'
+    appName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/app.zip'
+    runtimeStack: 'NODE|18-lts'
+  displayName: 'Deploy to Azure Web App'
+>>>>>>> 7040cc97661d3c8d14b4bf1c3e40740aeece8aef
