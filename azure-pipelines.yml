@@ -10,7 +10,7 @@ variables:
   nodeVersion: '18.x'
 
 pool:
-  name: Default  # Self-hosted agent
+  name: Default  # Using self-hosted agent (e.g., your MacBook)
 
 steps:
   - task: NodeTool@0
@@ -31,6 +31,7 @@ steps:
       fi
     displayName: 'Optional Build Step'
 
+  # ✅ Archive the app including node_modules and all source files
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
@@ -48,7 +49,7 @@ steps:
       ArtifactName: 'drop'
     displayName: 'Publish Artifact'
 
-  # ✅ Download the published artifact
+  # ✅ Download artifact for deployment step
   - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
