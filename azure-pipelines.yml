@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - master  # ✅ Changed from 'main' to 'master'
+      - master
 
 variables:
   azureSubscription: 'AzureConnection-Project2'
@@ -10,7 +10,7 @@ variables:
   nodeVersion: '18.x'
 
 pool:
-  name: Default  # ✅ Use self-hosted agent on your MacBook
+  name: Default  # Self-hosted agent
 
 steps:
   - task: NodeTool@0
@@ -23,10 +23,14 @@ steps:
     displayName: 'Install Dependencies'
 
   - script: |
-      npm run build || echo "no build step"
-    displayName: 'Build App'
+      if [ -f package.json ] && grep -q '"build":' package.json; then
+        echo "Build script found. Running..."
+        npm run build
+      else
+        echo "No build script found. Skipping build step."
+      fi
+    displayName: 'Optional Build Step'
 
-  # ✅ Archive including node_modules and relevant files
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
@@ -43,6 +47,15 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(webAppName).zip'
       ArtifactName: 'drop'
     displayName: 'Publish Artifact'
+
+  # ✅ Download the published artifact
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'drop'
+      downloadPath: '$(Pipeline.Workspace)'
+    displayName: 'Download Published Artifact'
 
   - task: AzureWebApp@1
     inputs:
