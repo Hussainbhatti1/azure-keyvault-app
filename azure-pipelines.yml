@@ -26,6 +26,7 @@ steps:
       npm run build || echo "no build step"
     displayName: 'Build App'
 
+  # ✅ Archive including node_modules and relevant files
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
@@ -33,7 +34,9 @@ steps:
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(webAppName).zip'
       replaceExistingArchive: true
-    displayName: 'Archive Files'
+      includePatterns: |
+        **/*
+    displayName: 'Archive Files (Including node_modules)'
 
   - task: PublishBuildArtifacts@1
     inputs:
