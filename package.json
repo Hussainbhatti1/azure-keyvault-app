@@ -1,14 +1,11 @@
 {
   "name": "azure-keyvault-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@azure/identity": "^4.10.1",
     "@azure/keyvault-secrets": "^4.10.0",
