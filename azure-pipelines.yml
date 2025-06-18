@@ -18,7 +18,7 @@ steps:
     versionSpec: '18.x'
 
 - script: |
-    npm install --production
+    npm install --omit=dev  # Updated from --production
     npm list --depth=0
   displayName: 'Install production dependencies'
 
