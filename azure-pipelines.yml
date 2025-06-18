@@ -17,10 +17,11 @@ steps:
   inputs:
     versionSpec: '18.x'
 
-- script: |
-    npm install --omit=dev  # Updated from --production
-    npm list --depth=0
-  displayName: 'Install production dependencies'
+- script: npm ci  # Clean install for CI environments
+  displayName: 'Install all dependencies'
+  
+- script: npm prune --production  # Remove devDependencies
+  displayName: 'Remove dev dependencies'
 
 - task: ArchiveFiles@2
   inputs:
