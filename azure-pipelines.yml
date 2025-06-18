@@ -43,6 +43,6 @@ steps:
     package: '$(Build.ArtifactStagingDirectory)/app.zip'
     runtimeStack: 'NODE|18-lts'
     appSettings: |
+      KEY_VAULT_NAME=project2KeyVault321
       SCM_DO_BUILD_DURING_DEPLOYMENT=true
       WEBSITE_NODE_DEFAULT_VERSION=18-lts
-      KEY_VAULT_NAME=project2KeyVault321
