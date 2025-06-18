@@ -16,6 +16,7 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '$(nodeVersion)'
+      runtimeStack: 'NODE|18-lts'
     displayName: 'Install Node.js'
 
   - script: |
@@ -41,6 +42,7 @@ steps:
       replaceExistingArchive: true
       includePatterns: |
         **/*
+        !node_modules/**  # Exclude node_modules
     displayName: 'Archive Files (Including node_modules)'
 
   - task: PublishBuildArtifacts@1

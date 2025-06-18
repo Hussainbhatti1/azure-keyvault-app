@@ -57,11 +57,10 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Only start server if not in Azure environment (Azure will start it automatically)
-if (!process.env.WEBSITE_SITE_NAME) {
-  app.listen(port, () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${port}`);
-  });
-}
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+});
+
 
 module.exports = app;
