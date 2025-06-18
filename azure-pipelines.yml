@@ -13,57 +13,46 @@ pool:
   name: Default  # Using self-hosted agent (e.g., your MacBook)
 
 steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '$(nodeVersion)'
-      runtimeStack: 'NODE|18-lts'
-    displayName: 'Install Node.js'
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
 
-  - script: |
-      npm install
-    displayName: 'Install Dependencies'
+- script: |
+    npm install --production
+    npm list --depth=0
+  displayName: 'Install production dependencies'
 
-  - script: |
-      if [ -f package.json ] && grep -q '"build":' package.json; then
-        echo "Build script found. Running..."
-        npm run build
-      else
-        echo "No build script found. Skipping build step."
-      fi
-    displayName: 'Optional Build Step'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+    replaceExistingArchive: true
+    includePatterns: |
+      **/*
+      !node_modules/**  # Exclude node_modules from zip
+  displayName: 'Create deployment package'
 
-  # ✅ Archive the app including node_modules and all source files
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/$(webAppName).zip'
-      replaceExistingArchive: true
-      includePatterns: |
-        **/*
-        !node_modules/**  # Exclude node_modules
-    displayName: 'Archive Files (Including node_modules)'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(webAppName).zip'
-      ArtifactName: 'drop'
-    displayName: 'Publish Artifact'
-
-  # ✅ Download artifact for deployment step
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'drop'
-      downloadPath: '$(Pipeline.Workspace)'
-    displayName: 'Download Published Artifact'
-
-  - task: AzureWebApp@1
-    inputs:
-      azureSubscription: '$(azureSubscription)'
-      appType: 'webApp'
-      appName: '$(webAppName)'
-      package: '$(Pipeline.Workspace)/drop/$(webAppName).zip'
-    displayName: 'Deploy to Azure Web App'
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: '$(azureSubscription)'
+    appType: 'webAppLinux'
+    appName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/app.zip'
+    runtimeStack: 'NODE|18-lts'
+    appSettings: |
+      [
+        {
+          "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+          "value": "true"
+        },
+        {
+          "name": "WEBSITE_NODE_DEFAULT_VERSION",
+          "value": "18-lts"
+        },
+        {
+          "name": "KEY_VAULT_NAME",
+          "value": "project2KeyVault321"
+        }
+      ]
