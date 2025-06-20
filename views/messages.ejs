@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Submitted Messages</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📬 Submitted Messages</h1>
+
+    <% if (messages.length === 0) { %>
+      <p>No messages submitted yet.</p>
+    <% } else { %>
+      <ul>
+        <% messages.forEach(m => { %>
+          <li><strong><%= m.name %>:</strong> <%= m.message %> (<%= m.email %>)</li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <h3>Submit a New Message</h3>
+    <form action="/form-submit" method="POST">
+      <input name="name" placeholder="Name" required />
+      <input name="email" type="email" placeholder="Email" required />
+      <textarea name="message" placeholder="Message" required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+
+    <hr/>
+    <a href="/">⬅ Home</a>
+    <% if (loggedIn) { %>
+      | <a href="/logout">Logout</a>
+    <% } else { %>
+      | <a href="/login">Login</a>
+    <% } %>
+  </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browse Products</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🛍️ Product List</h1>
+    <ul>
+      <% products.forEach(p => { %>
+        <li>
+          <a href="/details/<%= p.id %>"><%= p.name %></a> - <%= p.price %>
+        </li>
+      <% }) %>
+    </ul>
+
+    <hr/>
+    <a href="/">⬅ Home</a>
+    <% if (loggedIn) { %>
+      | <a href="/logout">Logout</a>
+    <% } else { %>
+      | <a href="/login">Login</a>
+    <% } %>
+  </div>
+</body>
+</html>

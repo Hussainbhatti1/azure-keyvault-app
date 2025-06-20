@@ -1,47 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Azure Key Vault App</title>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f3f3f3; }
-    .container { max-width: 600px; margin: auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
-    .error { color: #d32f2f; background: #ffebee; padding: 1rem; border-radius: 4px; }
-    .environment { 
-      position: absolute; 
-      top: 10px; 
-      right: 10px; 
-      padding: 0.3rem 0.6rem; 
-      border-radius: 4px; 
-      font-size: 0.8rem;
-      background: <%= environment === 'production' ? '#4caf50' : '#ff9800' %>;
-      color: white;
-    }
-  </style>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <div class="container">
-    <% if (environment !== 'production') { %>
-      <div class="environment">
-        <%= environment.toUpperCase() %>
-      </div>
-    <% } %>
-    
-    <h1>🔐 Azure Key Vault Secret</h1>
+    <h1>🔐 Azure Key Vault App</h1>
     
     <% if (error) { %>
-      <div class="error">
-        <p><strong>Error:</strong> <%= error %></p>
-      </div>
+      <div class="error"><%= error %></div>
     <% } %>
     
     <% if (secret) { %>
       <p><strong>DB Connection String:</strong></p>
       <pre><%= secret %></pre>
-    <% } else if (!error) { %>
-      <p>No secret retrieved</p>
     <% } %>
+
+    <hr />
+    <h2>📌 Navigation</h2>
+    <ul>
+      <li><a href="/browse">Browse Products</a></li>
+      <li><a href="/form">Submitted Messages</a></li>
+      <% if (loggedIn) { %>
+        <li><a href="/add-product">Add Product</a></li>
+        <li><a href="/logout">Logout</a></li>
+      <% } else { %>
+        <li><a href="/login">Login</a></li>
+      <% } %>
+    </ul>
   </div>
 </body>
 </html>

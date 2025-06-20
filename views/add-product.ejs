@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Product</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>➕ Add New Product</h1>
+    <form action="/add-product" method="POST">
+      <input name="name" placeholder="Product Name" required />
+      <textarea name="description" placeholder="Description" required></textarea>
+      <input name="price" placeholder="Price" required />
+      <button type="submit">Add Product</button>
+    </form>
+
+    <hr/>
+    <a href="/">⬅ Home</a> | <a href="/logout">Logout</a>
+  </div>
+</body>
+</html>

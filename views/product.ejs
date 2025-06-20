@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= product.name %></title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🛒 <%= product.name %></h1>
+    <p><strong>Price:</strong> <%= product.price %></p>
+    <p><strong>Description:</strong> <%= product.description %></p>
+
+    <hr/>
+    <a href="/browse">⬅ Back to Products</a>
+    <% if (loggedIn) { %>
+      | <a href="/logout">Logout</a>
+    <% } else { %>
+      | <a href="/login">Login</a>
+    <% } %>
+  </div>
+</body>
+</html>
