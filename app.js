@@ -24,7 +24,7 @@ const USER = {
   password: 'password123'
 };
 
-// Azure Key Vault Setup
+
 let client;
 try {
   if (!process.env.KEY_VAULT_NAME) {
