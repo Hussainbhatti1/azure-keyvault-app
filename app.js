@@ -136,14 +136,25 @@ app.get('/login', (req, res) => {
   res.render('login', { error: null, loggedIn: false });
 });
 
-// Handle Login Submission
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === USER.username && password === USER.password) {
-    req.session.loggedIn = true;
-    res.redirect('/');
-  } else {
-    res.render('login', { error: 'Invalid username or password', loggedIn: false });
+// Handle Login Submission (Improved with error logging)
+app.post('/login', (req, res, next) => {
+  try {
+    console.log('POST /login received. req.body:', req.body);
+    const { username, password } = req.body;
+    if (!username || !password) {
+      console.error('Login failed: username or password missing');
+      return res.status(400).send('Username or password missing');
+    }
+    if (username === USER.username && password === USER.password) {
+      req.session.loggedIn = true;
+      res.redirect('/');
+    } else {
+      console.error('Login failed: invalid credentials');
+      res.render('login', { error: 'Invalid username or password', loggedIn: false });
+    }
+  } catch (err) {
+    console.error('Error in POST /login:', err);
+    next(err); // Pass error to global error handler
   }
 });
 
@@ -151,10 +162,34 @@ app.post('/login', (req, res) => {
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
+      console.error('Logout error:', err);
       return res.send('Logout failed');
     }
     res.redirect('/');
   });
+});
+
+// Global error handler (Express error-handling middleware)
+app.use((err, req, res, next) => {
+  console.error('Express error handler:', err);
+  // Optionally log additional details:
+  if (req) {
+    console.error('Request details:', {
+      method: req.method,
+      url: req.url,
+      body: req.body,
+      query: req.query
+    });
+  }
+  res.status(500).send('Internal Server Error');
+});
+
+// Catch unhandled promise rejections and uncaught exceptions
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection:', reason);
+});
+process.on('uncaughtException', err => {
+  console.error('Uncaught Exception:', err);
 });
 
 // Start server
